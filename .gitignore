@@ -1,0 +1,17 @@
+# secrets and local wallets - never commit
+.env
+.env.*
+*.env
+.data/
+
+# python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# genlayer tooling
+.gltest_cache/
+artifacts/
+
+# node (deploy / live-scenario drivers)
+scripts/node_modules/

@@ -1,0 +1,29 @@
+{
+  "columns": [
+    "observation_id",
+    "compound_id",
+    "target",
+    "assay",
+    "ic50_nm",
+    "replicate",
+    "validated"
+  ],
+  "rows": 10240,
+  "targets": [
+    "EGFR",
+    "BRAF",
+    "KRAS-G12C",
+    "PIK3CA",
+    "ALK",
+    "MEK1",
+    "CDK4",
+    "JAK2"
+  ],
+  "assays": [
+    "biochemical_ic50",
+    "cell_viability"
+  ],
+  "units": {
+    "ic50_nm": "nanomolar"
+  }
+}

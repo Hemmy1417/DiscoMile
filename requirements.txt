@@ -1,0 +1,6 @@
+# Toolchain pinned from PyPI. The Direct Mode suite runs the contract against
+# an in-repository stub of the GenVM v0.6 SDK (tests/direct/conftest.py), so
+# it needs only pytest; genvm-linter provides the AST lint gate (its semantic
+# `check` cannot load the Studio Next runner - see docs/DEPLOYMENT.md).
+pytest==9.1.1
+genvm-linter==0.11.0
