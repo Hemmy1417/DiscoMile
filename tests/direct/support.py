@@ -45,11 +45,11 @@ REQUIREMENTS = [
     ("M3", "SEMANTIC",
      "The methodology is published: it describes the assay protocol, the "
      "validation procedure and the replicate policy used to produce the dataset.",
-     "", ""),
+     "methodology", ""),
     ("M4", "SEMANTIC",
      "The analysis is published: it reports results computed on the released "
      "dataset and its stated observation count is consistent with the dataset facts.",
-     "", ""),
+     "analysis", ""),
     ("M5", "ACCESSIBLE",
      "The dataset is publicly accessible at the committed location.",
      "dataset", ""),

@@ -1,5 +1,5 @@
 /**
- * Studio Next toolkit for OpenGrant (GenLayer Studio Next, chain 61997).
+ * Studio Next toolkit for Discovery-Milestone (GenLayer Studio Next, chain 61997).
  *
  *   node scripts/sn.mjs deploy <contract.py> [--key ROLE]
  *   node scripts/sn.mjs verify <address> <contract.py>
@@ -23,7 +23,7 @@ import { readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { resolve } from "node:path";
 
-export const RPC = process.env.OPENGRANT_RPC_URL ?? "https://studio-next.genlayer.com/api";
+export const RPC = process.env.DISCOVERY_MILESTONE_RPC_URL ?? "https://studio-next.genlayer.com/api";
 export const chain = () => ({ ...studioDevnet, name: "GenLayer Studio Next", rpcUrls: { default: { http: [RPC] } } });
 export const FEE_FLOOR = 10n ** 15n;
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -33,7 +33,7 @@ export const TRANSIENT = /fetch failed|rate limit|429|-32029|timeout|ECONNRESET|
 export async function rpc(method, params) {
   const res = await fetch(RPC, {
     method: "POST",
-    headers: { "content-type": "application/json", "user-agent": "Mozilla/5.0 opengrant-sn" },
+    headers: { "content-type": "application/json", "user-agent": "Mozilla/5.0 discovery-milestone-sn" },
     body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }),
   });
   return res.json();

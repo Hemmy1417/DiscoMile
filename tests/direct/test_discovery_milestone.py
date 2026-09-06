@@ -43,6 +43,7 @@ def test_create_freezes_terms(module, c):
                        "criterion": REQUIREMENTS[0][2], "source_id": "dataset",
                        "param": "10000"}
     assert reqs[5]["kind"] == "DEADLINE" and reqs[5]["source_id"] == ""
+    assert reqs[2]["kind"] == "SEMANTIC" and reqs[2]["source_id"] == "methodology"
     assert json.loads(c.get_config())["total_agreements"] == 1
     assert c.is_qualified(AGREEMENT) is False
 
@@ -177,7 +178,8 @@ def _reqs(mutate):
     (lambda r: r[4].__setitem__(3, "nowhere"), "ACCESSIBLE requirement must name a declared source_id"),
     (lambda r: r[5].__setitem__(3, "dataset"), "DEADLINE requirement must leave source_id empty"),
     (lambda r: r[5].__setitem__(4, "1"), "DEADLINE requirement must leave param empty"),
-    (lambda r: r[2].__setitem__(3, "methodology"), "SEMANTIC requirement must leave source_id empty"),
+    (lambda r: r[2].__setitem__(3, "dataset"), "SEMANTIC requirement must name a document source, not a DATASET"),
+    (lambda r: r[2].__setitem__(3, "ghost"), "SEMANTIC requirement must name a declared source_id or leave it empty"),
     (lambda r: r[2].__setitem__(4, "strict"), "SEMANTIC requirement must leave param empty"),
 ])
 def test_invalid_requirements_refused(module, c, mutate, message):
@@ -503,3 +505,9 @@ def test_config_publishes_vocabulary_and_statements(module, c):
     for key in ("equivalence", "deterministic_responsibilities", "failure_policy"):
         assert len(config[key]) > 100
     assert sent() == []
+
+
+def test_a_semantic_requirement_may_be_judged_over_every_document(module, c):
+    reqs = [r for r in REQUIREMENTS] + [("M7", "SEMANTIC", "The release is internally consistent across all documents.", "", "")]
+    create(module, c, reqs=reqs)
+    assert requirements(c)["requirements"][6]["source_id"] == ""

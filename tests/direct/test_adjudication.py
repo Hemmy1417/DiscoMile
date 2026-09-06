@@ -115,6 +115,8 @@ def test_the_prompt_carries_the_rules_the_facts_and_the_documents(module, c):
     assert blob["agreement"]["agreement_id"] == AGREEMENT
     assert blob["agreement"]["title"] == "Open Drug-Discovery Dataset"
     assert [r["requirement_id"] for r in blob["requirements"]] == ["M3", "M4"]
+    assert [r["source_id"] for r in blob["requirements"]] == ["methodology", "analysis"]
+    assert blob["excluded_sources"] == []
     assert blob["dataset_facts"] == [{
         "source_id": "dataset", "kind": "DATASET", "row_count": 10240,
         "columns": ["observation_id", "compound_id", "target", "assay", "ic50_nm",
@@ -367,31 +369,53 @@ def test_contradiction_and_injection_together(module, c):
 
 # -- document evidence failures ---------------------------------------------------------
 
-def test_document_unavailable_is_left_out_of_the_prompt(module, c):
+def test_document_unavailable_makes_its_requirement_unverifiable_by_code(module, c):
     submitted(module, c)
     serve_package()
     dead("methodology.md")
-    panel_says(answer(M3={"finding": "UNVERIFIABLE", "contradiction": False,
-                          "injection": False, "note": "no methodology document"}))
+    # The panel is asked about M4 only; whatever it might say about M3 is
+    # never consulted - M3 is decided by code from the source outcome.
+    panel_says(answer(M3={"finding": "SATISFIED", "contradiction": False,
+                          "injection": False, "note": "would have been positive"}))
     as_(module, STRANGER, 0)
     c.adjudicate(AGREEMENT)
     rec = receipt(c)
     assert source_row(rec, "methodology")["status"] == "UNAVAILABLE"
     assert findings(c)["M3"] == "UNVERIFIABLE" and findings(c)["M4"] == "SATISFIED"
+    assert row_of(rec, "M3")["note"] == "committed document methodology could not be examined"
     assert verdict(c)["verdict"] == "INCONCLUSIVE"
     blob = blob_of(prompts()[0])
+    assert [r["requirement_id"] for r in blob["requirements"]] == ["M4"]
     assert [e["source_id"] for e in blob["evidence"]] == ["analysis", "preprint"]
+    assert blob["excluded_sources"] == [{"source_id": "methodology", "kind": "METHODOLOGY",
+                                         "status": "UNAVAILABLE"}]
     assert "EVIDENCE_UNAVAILABLE" in rec["reason_codes"]
 
 
+def test_unbound_semantic_requirement_is_judged_over_every_document(module, c):
+    from tests.direct.support import REQUIREMENTS
+    reqs = [r for r in REQUIREMENTS] + [("M7", "SEMANTIC", "The documents agree with each other.", "", "")]
+    submitted(module, c, reqs=reqs)
+    serve_package()
+    dead("methodology.md")
+    panel_says(dict(SEMANTIC_SATISFIED, M7={"finding": "SATISFIED", "contradiction": False,
+                                            "injection": False, "note": "consistent"}))
+    as_(module, STRANGER, 0)
+    c.adjudicate(AGREEMENT)
+    f = findings(c)
+    assert f["M3"] == "UNVERIFIABLE" and f["M4"] == "SATISFIED" and f["M7"] == "SATISFIED"
+    blob = blob_of(prompts()[0])
+    assert [(r["requirement_id"], r["source_id"]) for r in blob["requirements"]] == [("M4", "analysis"), ("M7", "")]
+
+
 def test_hash_mismatch_excludes_content_before_any_prompt(module, c):
-    adjudicated(module, c, served={"methodology": METHODOLOGY + " "},
-                answer=answer(M3={"finding": "UNVERIFIABLE", "contradiction": False,
-                                  "injection": False, "note": ""}))
+    adjudicated(module, c, served={"methodology": METHODOLOGY + " "})
     rec = receipt(c)
     assert source_row(rec, "methodology")["status"] == "HASH_MISMATCH"
     assert source_row(rec, "methodology")["hash_match"] == "MISMATCH"
+    assert findings(c)["M3"] == "UNVERIFIABLE" and verdict(c)["verdict"] == "INCONCLUSIVE"
     assert "EVIDENCE_HASH_MISMATCH" in rec["reason_codes"]
+    assert blob_of(prompts()[0])["excluded_sources"][0]["status"] == "HASH_MISMATCH"
     for text in prompts():
         assert "Replicate policy" not in text and "replicate policy" not in text.split("UNTRUSTED DATA:\n", 1)[1].lower().replace("the replicate policy used", "")
 
@@ -406,7 +430,7 @@ def test_all_documents_unavailable_skips_the_synthesis(module, c):
     assert verdict(c)["verdict"] == "INCONCLUSIVE"
     assert findings(c) == {"M1": "SATISFIED", "M2": "SATISFIED", "M3": "UNVERIFIABLE",
                            "M4": "UNVERIFIABLE", "M5": "SATISFIED", "M6": "SATISFIED"}
-    assert row_of(rec, "M3")["note"] == "no committed document could be examined"
+    assert row_of(rec, "M3")["note"] == "committed document methodology could not be examined"
     assert rec["examined_source_count"] == 1
     assert verdict(c)["requirements_met"] == 4
 

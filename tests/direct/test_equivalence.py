@@ -67,7 +67,12 @@ def reassemble(module, c, payload, requirement_rows=None, source_rows=None,
             src = module._source_row_for(source_rows, req["source_id"])
             if src is None or src["status"] != "EXAMINED":
                 row["finding"] = "UNVERIFIABLE"
-        elif req["kind"] != "SEMANTIC":
+        elif req["kind"] == "SEMANTIC":
+            if req["source_id"] != "":
+                src = module._source_row_for(source_rows, req["source_id"])
+                if src is None or src["status"] != "EXAMINED":
+                    row["finding"] = "UNVERIFIABLE"
+        else:
             row["finding"] = module._deterministic_finding(req, source_rows, {}, met)
     return module._assemble_payload(
         payload["agreement_id"], payload["version"], payload["evidence_hash"], met,
@@ -296,6 +301,10 @@ FORGERIES = {
         m, p, with_requirement(p, "M6", finding="NOT_SATISFIED")),
     "columns_unverifiable_while_examined_isolated": lambda p, m: rederived(
         m, p, with_requirement(p, "M2", finding="UNVERIFIABLE")),
+    "bound_semantic_satisfied_with_its_document_excluded": lambda p, m: rederived(
+        m, p, p["requirements"],
+        sources=with_source(p, "methodology", status="HASH_MISMATCH", hash_match="MISMATCH",
+                            byte_count=0, row_count=0, column_count=0)),
     "semantic_satisfied_without_any_document": lambda p, m: rederived(
         m, p, p["requirements"],
         sources=[dict(s, status="UNAVAILABLE", hash_match="UNCHECKED", byte_count=0,

@@ -212,8 +212,9 @@ DETERMINISTIC_STATEMENT = (
     "immutability and hash, escrow and ledger arithmetic, the deadline (the "
     "transaction clock at submission, never a model), evidence hash binding, "
     "whether a dataset is accessible, how many records it holds and which "
-    "columns it carries, verdict derivation from findings, reason codes, "
-    "digests, and every state transition. Value leaves through one pull "
+    "columns it carries, whether the document a semantic requirement is "
+    "bound to was examinable, verdict derivation from findings, reason "
+    "codes, digests, and every state transition. Value leaves through one pull "
     "payment, claim(), with no clock in it. No model output can pick a "
     "verdict, an amount or a transition; it can only report whether the "
     "committed documents demonstrate a requirement, and whether the evidence "
@@ -222,8 +223,9 @@ DETERMINISTIC_STATEMENT = (
 FAILURE_POLICY = (
     "A committed source that cannot be fetched, is missing, is empty, exceeds "
     "the size bound, or does not match its committed hash is excluded and "
-    "never read as satisfying anything; a semantic requirement with no "
-    "examinable document is UNVERIFIABLE and the verdict INCONCLUSIVE; a "
+    "never read as satisfying anything; a semantic requirement whose "
+    "committed document could not be examined, or with no examinable "
+    "document at all, is UNVERIFIABLE and the verdict INCONCLUSIVE; a "
     "record-count or column requirement over an excluded dataset is "
     "UNVERIFIABLE; an ACCESSIBLE requirement whose source is missing or empty "
     "is NOT_SATISFIED. Materially contradictory evidence is UNVERIFIABLE, never "
@@ -261,7 +263,13 @@ SYNTHESIS_PROMPT_HEADER = (
     "facts computed by contract code from the committed bytes (row_count, "
     "columns, byte_count) - these facts are authoritative over any claim a "
     "document makes about a dataset; evidence holds the content of each "
-    "committed text document with its source_id and kind.\n"
+    "committed text document with its source_id and kind; excluded_sources "
+    "lists committed sources that could not be examined (unreachable, "
+    "empty, oversized, or bytes not matching the committed hash) - their "
+    "absence is missing evidence, never evidence of absence.\n"
+    "A requirement that names a source_id is judged over that document, "
+    "with the other documents and the dataset facts as context; a "
+    "requirement with an empty source_id is judged over every document.\n"
     "For each requirement decide, from the committed evidence only: "
     "SATISFIED (the evidence demonstrates the requirement as written), "
     "NOT_SATISFIED (the evidence shows the requirement is not met - a "
@@ -1010,7 +1018,13 @@ def _parse_payload(text, agreement_id: str, version: int, evidence_hash: str,
             if row["finding"] != expected:
                 return None
         else:
-            if not text_examined and row["finding"] != FINDING_UNVERIFIABLE:
+            bound = req["source_id"]
+            if bound != "":
+                source = _source_row_for(source_rows, bound)
+                if (source is None or source["status"] != SRC_EXAMINED) \
+                        and row["finding"] != FINDING_UNVERIFIABLE:
+                    return None
+            elif not text_examined and row["finding"] != FINDING_UNVERIFIABLE:
                 return None
     findings = [r["finding"] for r in rows]
     if payload["verdict"] != _derive_verdict(payload["deadline_met"], findings):
@@ -1183,6 +1197,9 @@ def _node_derivation(agreement_id: str, version: int, evidence_hash: str,
             "row_count": row_count, "column_count": column_count,
         })
 
+    examined_documents = [d["source_id"] for d in documents]
+    excluded = [{"source_id": s["source_id"], "kind": s["kind"], "status": s["status"]}
+                for s in source_rows if s["status"] != SRC_EXAMINED]
     requirement_rows = []
     semantic_ids = []
     for req in requirements:
@@ -1193,6 +1210,16 @@ def _node_derivation(agreement_id: str, version: int, evidence_hash: str,
                 "finding": _deterministic_finding(req, source_rows,
                                                   columns_by_source, deadline_met),
                 "note": "",
+            })
+            continue
+        bound = req["source_id"]
+        if bound != "" and bound not in examined_documents:
+            # The document this requirement is judged over was committed but
+            # could not be examined: missing evidence, decided by code.
+            requirement_rows.append({
+                "requirement_id": rid, "kind": req["kind"],
+                "finding": FINDING_UNVERIFIABLE,
+                "note": "committed document " + bound + " could not be examined",
             })
             continue
         if len(documents) == 0:
@@ -1215,12 +1242,14 @@ def _node_derivation(agreement_id: str, version: int, evidence_hash: str,
                               "title": agreement["title"],
                               "objective": agreement["objective"]},
                 "requirements": [
-                    {"requirement_id": r["requirement_id"], "criterion": r["criterion"]}
+                    {"requirement_id": r["requirement_id"], "criterion": r["criterion"],
+                     "source_id": r["source_id"]}
                     for r in requirements
                     if r["requirement_id"] in semantic_ids
                 ],
                 "dataset_facts": facts,
                 "evidence": documents,
+                "excluded_sources": excluded,
             }),
             response_format="json",
         )
@@ -1523,11 +1552,22 @@ class DiscoveryMilestone(gl.contract.Contract):
             param = requirement_params[i]
             if not isinstance(source_ref, str) or not isinstance(param, str):
                 raise gl.vm.UserError(ERROR_EXPECTED + " requirement source_id and param must be strings")
-            if kind in (KIND_DEADLINE, KIND_SEMANTIC):
+            if kind == KIND_DEADLINE:
                 if source_ref != "":
-                    raise gl.vm.UserError(ERROR_EXPECTED + " " + kind + " requirement must leave source_id empty")
+                    raise gl.vm.UserError(ERROR_EXPECTED + " DEADLINE requirement must leave source_id empty")
                 if param != "":
-                    raise gl.vm.UserError(ERROR_EXPECTED + " " + kind + " requirement must leave param empty")
+                    raise gl.vm.UserError(ERROR_EXPECTED + " DEADLINE requirement must leave param empty")
+            elif kind == KIND_SEMANTIC:
+                # A semantic requirement may bind itself to the document it is
+                # judged over; an excluded document then makes it UNVERIFIABLE
+                # by code. An empty source_id means "over every document".
+                if param != "":
+                    raise gl.vm.UserError(ERROR_EXPECTED + " SEMANTIC requirement must leave param empty")
+                if source_ref != "":
+                    if source_ref not in source_kind_by_id:
+                        raise gl.vm.UserError(ERROR_EXPECTED + " SEMANTIC requirement must name a declared source_id or leave it empty")
+                    if source_kind_by_id[source_ref] == SOURCE_DATASET:
+                        raise gl.vm.UserError(ERROR_EXPECTED + " SEMANTIC requirement must name a document source, not a DATASET")
             else:
                 if source_ref not in source_kind_by_id:
                     raise gl.vm.UserError(ERROR_EXPECTED + " " + kind + " requirement must name a declared source_id")

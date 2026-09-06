@@ -77,8 +77,8 @@ const SOURCES = [
 const REQUIREMENTS = [
   ["M1", "ROW_COUNT_MIN", "The released dataset contains at least 10,000 validated observations.", "dataset", "10000"],
   ["M2", "COLUMNS_REQUIRED", "Every observation carries the required metadata columns: compound_id, target, assay, ic50_nm, validated.", "dataset", "compound_id,target,assay,ic50_nm,validated"],
-  ["M3", "SEMANTIC", "The methodology is published: it describes the assay protocol, the validation procedure and the replicate policy used to produce the dataset.", "", ""],
-  ["M4", "SEMANTIC", "The analysis is published: it reports results computed on the released dataset, and the observation count and target count it states are consistent with the dataset facts.", "", ""],
+  ["M3", "SEMANTIC", "The methodology is published: it describes the assay protocol, the validation procedure and the replicate policy used to produce the dataset.", "methodology", ""],
+  ["M4", "SEMANTIC", "The analysis is published: it reports results computed on the released dataset, and the observation count and target count it states are consistent with the dataset facts.", "analysis", ""],
   ["M5", "ACCESSIBLE", "The dataset is publicly accessible at the committed location with the committed bytes.", "dataset", ""],
   ["M6", "DEADLINE", "The milestone is completed before the agreed deadline.", "", ""],
 ];
