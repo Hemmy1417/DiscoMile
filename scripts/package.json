@@ -1,0 +1,9 @@
+{
+  "name": "discovery-milestone-scripts",
+  "private": true,
+  "type": "module",
+  "description": "Deploy and live-scenario drivers for Discovery-Milestone on GenLayer Studio Next (genlayer-js 2.0.0-rc.1 speaks the fee distribution the network requires).",
+  "dependencies": {
+    "genlayer-js": "2.0.0-rc.1"
+  }
+}

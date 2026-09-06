@@ -1,0 +1,43 @@
+# Required gate: preflight + Direct Mode + AST lint + the mutation kill sweep.
+# The contract targets the GenVM v0.6 runner that GenLayer Studio Next ships
+# (py-genlayer:5jycge4q...); genvm-lint's semantic `check` can only load the
+# GenVM releases it knows (v0.3.0-rc7), and genlayer-py cannot pass Studio
+# Next's fee gate, so neither a `check` nor a gltest job can run here.
+# Semantic validation of this runner happens where it can: on the deployment
+# itself, byte-verified and exercised by the live scenarios in
+# docs/DEPLOYMENT.md.
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  required:
+    name: preflight + direct tests + AST lint + mutation sweep
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --upgrade pip
+      - run: pip install -r requirements.txt
+      - run: python scripts/preflight.py
+      - run: python -m pytest tests/direct -q
+      - run: PYTHONUTF8=1 genvm-lint lint contracts/discovery_milestone.py --json
+      - run: python scripts/mutation_check.py
+
+  scripts:
+    name: driver scripts install (npm 10, the exact check a fresh clone runs)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: scripts
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: node --check sn.mjs && node --check live_scenarios.mjs
