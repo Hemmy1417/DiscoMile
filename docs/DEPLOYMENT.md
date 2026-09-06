@@ -349,6 +349,21 @@ address at the top of this file; `docs/DEPLOYMENT.md`, `README.md` and
 
 ## Clean-checkout rehearsal
 
-Pending at this commit: the rehearsal clones the pushed evidence commit into
-a short path, runs the gates from the clone and verifies the deployment from
-it; the commit that follows records the result here.
+A fresh `git clone https://github.com/Hemmy1417/DiscoMile.git` into a short path (`C:\dm-clean`), at commit
+`c45c3b33cd72c085032f8924bccb62819c1f653b` (contract blob `4f9fdd0b684a42f0bbd2fbdb99cc4b67c1dc408a`, the same blob as the deployment
+source commit), ran the gates a judge would run, with nothing copied from
+the working tree:
+
+| Command (from the clone) | Result |
+|---|---|
+| `python scripts/preflight.py` | PREFLIGHT PASS (152 checks) |
+| `python -m pytest tests/direct -q` | 468 passed in 12.33s |
+| `genvm-lint lint contracts/discovery_milestone.py` | ✓ Lint passed (3 checks) |
+| `npm ci (in scripts/)` | added 220 packages in 40s |
+| `node --check sn.mjs, live_scenarios.mjs` | syntax ok |
+| `node scripts/sn.mjs verify 0x9c99d7aD... contracts/discovery_milestone.py` | verify: byte-for-byte identical |
+
+The rehearsal was recorded in the commit after the one it cloned; that
+commit changes this document and a preflight tidy-up (syntax checks no
+longer write a bytecode cache next to the fixtures), and the contract blob
+is unchanged.

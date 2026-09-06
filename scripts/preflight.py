@@ -206,7 +206,9 @@ def main() -> None:
     # -- helper scripts and tests compile -------------------------------------------------
     for rel in ("scripts/mutation_check.py", "examples/consumer.py", "fixtures/generate.py",
                 "tests/direct/conftest.py", "tests/direct/support.py"):
-        py_compile.compile(str(ROOT / rel), doraise=True)
+        # compile() validates syntax without writing a bytecode cache next to
+        # the file (py_compile would leave fixtures/__pycache__ behind).
+        compile((ROOT / rel).read_text(encoding="utf-8"), str(ROOT / rel), "exec")
         check(f"compiles: {rel}", True)
 
     print(f"\nPREFLIGHT PASS ({PASSED} checks)")
