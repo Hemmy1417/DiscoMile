@@ -108,6 +108,8 @@ def rederived(module, payload, rows, sources=None):
     out = json.loads(json.dumps(payload))
     out.update({
         "requirements": rows, "sources": sources, "verdict": verdict,
+        "examined_source_count": examined,
+        "excluded_source_count": len(sources) - examined,
         "requirements_met": sum(1 for f in findings if f == "SATISFIED"),
         "evidence_sufficient": examined == len(sources) and "UNVERIFIABLE" not in findings,
         "reason_codes": module._derive_reason_codes(

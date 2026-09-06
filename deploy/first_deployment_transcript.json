@@ -1,0 +1,852 @@
+{
+  "network": "studio-next",
+  "chain_id": 61997,
+  "contract": "0xF9788D199c8C28Ee44ff75c096D9cB77eC61d583",
+  "fixtures_commit": "667650fd5a89086f5dd7fdb3bb0082d72b70c8b4",
+  "repository": {
+    "owner": "Hemmy1417",
+    "name": "DiscoMile"
+  },
+  "actors": {
+    "sponsor": "0x86dDeAFc53B2e194aaD4d74D265ab7Cb741118b5",
+    "researcher": "0x57a7Dc8Ea2d2De0a5906eB28902b8D677Dfc657C",
+    "stranger": "0xB66D7Fa5C37B696a78cB7F9B4F8056EF37a4b7e6"
+  },
+  "started_at": "2026-09-06T18:30:04.975Z",
+  "scenarios": {
+    "A": {
+      "agreement_id": "DM-LIVE-A-09061830",
+      "create": {
+        "fn": "create_agreement",
+        "actor": "sponsor",
+        "tx": "0x49365825b1a3f1036d23da8834b1a30e52b330b0f203bac4a570587e1759f677",
+        "leader": "SUCCESS",
+        "result_name": "MAJORITY_AGREE",
+        "votes": [
+          "IDLE",
+          "AGREE",
+          "AGREE",
+          "IDLE",
+          "AGREE"
+        ]
+      },
+      "terms_hash": "38d8fefa97f82399a66fa287a7a5b796d1224f61fe0cad13b510f9827bdefab0",
+      "deadline": "2027-06-30T23:59:59Z",
+      "walls": [
+        {
+          "wall": "stranger funds",
+          "fn": "fund_agreement",
+          "actor": "stranger",
+          "refused_at": "simulation",
+          "contract_text": "[EXPECTED] only the sponsor funds"
+        },
+        {
+          "wall": "inexact deposit",
+          "fn": "fund_agreement",
+          "actor": "sponsor",
+          "refused_at": "simulation",
+          "contract_text": "[EXPECTED] deposit must equal the reward exactly"
+        },
+        {
+          "wall": "fund twice",
+          "fn": "fund_agreement",
+          "actor": "sponsor",
+          "refused_at": "simulation",
+          "contract_text": "[EXPECTED] agreement is not a draft"
+        },
+        {
+          "wall": "stranger submits",
+          "fn": "submit_evidence",
+          "actor": "stranger",
+          "refused_at": "simulation",
+          "contract_text": "[EXPECTED] only the researcher submits"
+        },
+        {
+          "wall": "reclaim before the deadline",
+          "fn": "sponsor_reclaim",
+          "actor": "sponsor",
+          "refused_at": "simulation",
+          "contract_text": "[EXPECTED] the deadline has not passed"
+        },
+        {
+          "wall": "release before any verdict",
+          "fn": "release_reward",
+          "actor": "stranger",
+          "refused_at": "simulation",
+          "contract_text": "[EXPECTED] reward is releasable only after QUALIFIED"
+        },
+        {
+          "wall": "reclaim while under review",
+          "fn": "sponsor_reclaim",
+          "actor": "sponsor",
+          "refused_at": "simulation",
+          "contract_text": "[EXPECTED] an evidence package is under review; adjudicate it first"
+        },
+        {
+          "wall": "second adjudication",
+          "fn": "adjudicate",
+          "actor": "stranger",
+          "refused_at": "simulation",
+          "contract_text": "[EXPECTED] no evidence package is under review"
+        },
+        {
+          "wall": "reclaim after qualified",
+          "fn": "sponsor_reclaim",
+          "actor": "sponsor",
+          "refused_at": "simulation",
+          "contract_text": "[EXPECTED] agreement qualified; the reward belongs to the researcher"
+        },
+        {
+          "wall": "resubmit after qualified",
+          "fn": "submit_evidence",
+          "actor": "researcher",
+          "refused_at": "simulation",
+          "contract_text": "[EXPECTED] agreement already qualified"
+        },
+        {
+          "wall": "double release",
+          "fn": "release_reward",
+          "actor": "stranger",
+          "refused_at": "simulation",
+          "contract_text": "[EXPECTED] reward is releasable only after QUALIFIED"
+        },
+        {
+          "wall": "stranger pulls an empty ledger",
+          "fn": "claim",
+          "actor": "stranger",
+          "refused_at": "simulation",
+          "contract_text": "[EXPECTED] nothing claimable"
+        },
+        {
+          "wall": "double pull",
+          "fn": "claim",
+          "actor": "researcher",
+          "refused_at": "simulation",
+          "contract_text": "[EXPECTED] nothing claimable"
+        }
+      ],
+      "fund": {
+        "fn": "fund_agreement",
+        "actor": "sponsor",
+        "tx": "0xbb2c1706b34ffdd869379a9abb90c4f5068b9ac519931c0f74e0b3fbcba7e980",
+        "leader": "SUCCESS",
+        "result_name": "MAJORITY_AGREE",
+        "votes": [
+          "IDLE",
+          "AGREE",
+          "AGREE",
+          "IDLE",
+          "AGREE"
+        ],
+        "value_atto": "20000000000000000"
+      },
+      "submit": {
+        "fn": "submit_evidence",
+        "actor": "researcher",
+        "tx": "0x9e66567890cc82ab700aba8cda8dfb5c47ba8a15396a4785fe15c2447411b39f",
+        "leader": "SUCCESS",
+        "result_name": "MAJORITY_AGREE",
+        "votes": [
+          "IDLE",
+          "AGREE",
+          "AGREE",
+          "IDLE",
+          "AGREE"
+        ],
+        "version": 1,
+        "evidence_hash": "aff906665ceb94d20d9714b9cbbc375c5b5ab93e3916290389ff68fb126f7809",
+        "deadline_met": true
+      },
+      "adjudicate": {
+        "fn": "adjudicate",
+        "actor": "stranger",
+        "tx": "0x919dccd4fd4787d4b004d0582e2975c4a77c34cc40a5feab7e314bab9c48e13f",
+        "leader": "SUCCESS",
+        "result_name": "MAJORITY_AGREE",
+        "votes": [
+          "AGREE",
+          "AGREE",
+          "IDLE",
+          "IDLE",
+          "AGREE"
+        ],
+        "verdict": {
+          "agreement_id": "DM-LIVE-A-09061830",
+          "consumable": true,
+          "deadline": "2027-06-30T23:59:59Z",
+          "deadline_met": true,
+          "escrow_atto": "20000000000000000",
+          "evidence_hash": "aff906665ceb94d20d9714b9cbbc375c5b5ab93e3916290389ff68fb126f7809",
+          "evidence_sufficient": true,
+          "evidence_version": 1,
+          "finalized": true,
+          "found": true,
+          "qualified": true,
+          "qualified_version": 1,
+          "reclaimed_atto": "0",
+          "record_digest": "8576cca87bcc8d799e762dfd0cf523e88e628af5c22beff368eb4d166643688e",
+          "released": false,
+          "released_atto": "0",
+          "requirements_met": 6,
+          "requirements_total": 6,
+          "researcher": "0x57a7dc8ea2d2de0a5906eb28902b8d677dfc657c",
+          "resubmittable": false,
+          "reward_atto": "20000000000000000",
+          "schema_version": 1,
+          "sponsor": "0x86ddeafc53b2e194aad4d74d265ab7cb741118b5",
+          "status": "ADJUDICATED",
+          "terms_hash": "38d8fefa97f82399a66fa287a7a5b796d1224f61fe0cad13b510f9827bdefab0",
+          "terms_version": 1,
+          "verdict": "QUALIFIED"
+        },
+        "receipt": {
+          "agreement_id": "DM-LIVE-A-09061830",
+          "contradiction_suspected": false,
+          "deadline_met": true,
+          "decided_at": "2026-09-06T18:32:53Z",
+          "evidence_hash": "aff906665ceb94d20d9714b9cbbc375c5b5ab93e3916290389ff68fb126f7809",
+          "evidence_sufficient": true,
+          "examined_source_count": 4,
+          "excluded_source_count": 0,
+          "found": true,
+          "injection_suspected": false,
+          "reason_codes": [
+            "ALL_REQUIREMENTS_SATISFIED"
+          ],
+          "record_digest": "8576cca87bcc8d799e762dfd0cf523e88e628af5c22beff368eb4d166643688e",
+          "requirements": [
+            {
+              "finding": "SATISFIED",
+              "kind": "ROW_COUNT_MIN",
+              "note": "",
+              "requirement_id": "M1"
+            },
+            {
+              "finding": "SATISFIED",
+              "kind": "COLUMNS_REQUIRED",
+              "note": "",
+              "requirement_id": "M2"
+            },
+            {
+              "finding": "SATISFIED",
+              "kind": "SEMANTIC",
+              "note": "Methodology document describes assay protocol (two formats, 8-point half-log series, 4PL fit), validation procedure (Hill slope, plateaus, replicate agreement), and replicate policy (up to 3 biological replicates, not averaged).",
+              "requirement_id": "M3"
+            },
+            {
+              "finding": "SATISFIED",
+              "kind": "SEMANTIC",
+              "note": "Analysis reports 10,240 observations (matches dataset_facts row_count) across 8 targets (matches dataset). Results computed on released dataset. No contradictions with dataset_facts on observation count or target count.",
+              "requirement_id": "M4"
+            },
+            {
+              "finding": "SATISFIED",
+              "kind": "ACCESSIBLE",
+              "note": "",
+              "requirement_id": "M5"
+            },
+            {
+              "finding": "SATISFIED",
+              "kind": "DEADLINE",
+              "note": "",
+              "requirement_id": "M6"
+            }
+          ],
+          "requirements_met": 6,
+          "requirements_total": 6,
+          "schema_version": 1,
+          "sources": [
+            {
+              "byte_count": 549471,
+              "column_count": 7,
+              "hash_match": "MATCH",
+              "kind": "DATASET",
+              "row_count": 10240,
+              "source_id": "dataset",
+              "status": "EXAMINED"
+            },
+            {
+              "byte_count": 1933,
+              "column_count": 0,
+              "hash_match": "MATCH",
+              "kind": "METHODOLOGY",
+              "row_count": 0,
+              "source_id": "methodology",
+              "status": "EXAMINED"
+            },
+            {
+              "byte_count": 1042,
+              "column_count": 0,
+              "hash_match": "MATCH",
+              "kind": "ANALYSIS",
+              "row_count": 0,
+              "source_id": "analysis",
+              "status": "EXAMINED"
+            },
+            {
+              "byte_count": 1193,
+              "column_count": 0,
+              "hash_match": "MATCH",
+              "kind": "PUBLICATION",
+              "row_count": 0,
+              "source_id": "preprint",
+              "status": "EXAMINED"
+            }
+          ],
+          "summary": "QUALIFIED on evidence package 1: 4/4 sources examined; requirements satisfied 6/6; deadline met: yes; not satisfied: none; unverifiable: none",
+          "verdict": "QUALIFIED",
+          "version": 1
+        }
+      },
+      "credit": {
+        "fn": "release_reward",
+        "actor": "stranger",
+        "tx": "0x25ff26ef227b03221637fa63d49dafafd4295a093492dc681e228f5131fffb90",
+        "leader": "SUCCESS",
+        "result_name": "MAJORITY_AGREE",
+        "votes": [
+          "AGREE",
+          "IDLE",
+          "AGREE",
+          "AGREE",
+          "IDLE"
+        ]
+      },
+      "pull": {
+        "fn": "claim",
+        "actor": "researcher",
+        "tx": "0x8e6b9a04009cdd76f3d32b1bcc033193f1606879bf3b847484df0d465611abb6",
+        "leader": "SUCCESS",
+        "result_name": "MAJORITY_AGREE",
+        "votes": [
+          "AGREE",
+          "AGREE",
+          "AGREE",
+          "IDLE",
+          "IDLE"
+        ],
+        "balance": {
+          "before": "19801394155249966277",
+          "after": "19821267850249965454",
+          "delta": "19873694999999177",
+          "claimable_before": "20000000000000000",
+          "claimable_after": "0"
+        }
+      },
+      "final": {
+        "agreement_id": "DM-LIVE-A-09061830",
+        "created_at": "2026-09-06T18:30:15Z",
+        "deadline": "2027-06-30T23:59:59Z",
+        "decided_at": "2026-09-06T18:32:53Z",
+        "escrow_atto": "0",
+        "found": true,
+        "funded_at": "2026-09-06T18:31:07Z",
+        "judged_version": 1,
+        "objective": "Produce and publicly release a dataset of at least 10,000 validated IC50 observations for small molecules against eight kinase targets, together with the methodology and the analysis required by the research agreement.",
+        "package_count": 1,
+        "qualified": true,
+        "qualified_version": 1,
+        "reclaimed_atto": "0",
+        "released": true,
+        "released_atto": "20000000000000000",
+        "requirement_count": 6,
+        "researcher": "0x57a7dc8ea2d2de0a5906eb28902b8d677dfc657c",
+        "resubmittable": false,
+        "reward_atto": "20000000000000000",
+        "schema_version": 1,
+        "settled_at": "2026-09-06T18:33:57Z",
+        "source_count": 4,
+        "sponsor": "0x86ddeafc53b2e194aad4d74d265ab7cb741118b5",
+        "status": "RELEASED",
+        "terms_hash": "38d8fefa97f82399a66fa287a7a5b796d1224f61fe0cad13b510f9827bdefab0",
+        "terms_version": 1,
+        "title": "Open Drug-Discovery Dataset",
+        "verdict": "QUALIFIED"
+      }
+    },
+    "B": {
+      "agreement_id": "DM-LIVE-B-09061830",
+      "create": {
+        "fn": "create_agreement",
+        "actor": "sponsor",
+        "tx": "0x8a912a79263211d4ac338f3b84c3f67604422344fc92853967fec625e7f1a902",
+        "leader": "SUCCESS",
+        "result_name": "MAJORITY_AGREE",
+        "votes": [
+          "AGREE",
+          "IDLE",
+          "IDLE",
+          "AGREE",
+          "AGREE"
+        ]
+      },
+      "terms_hash": "5947515288de51d60abb4b7745d899f13c4a2c88eb86289688ab4980a1d0be29",
+      "deadline": "2026-09-06T18:42:35Z",
+      "fund": {
+        "fn": "fund_agreement",
+        "actor": "sponsor",
+        "tx": "0xb8d6790fcc61296de72f6252c2bd86ad3a58c306ffcabcb4a2b11b64f9197131",
+        "leader": "SUCCESS",
+        "result_name": "MAJORITY_AGREE",
+        "votes": [
+          "AGREE",
+          "AGREE",
+          "IDLE",
+          "AGREE",
+          "IDLE"
+        ],
+        "value_atto": "20000000000000000"
+      },
+      "submit": {
+        "fn": "submit_evidence",
+        "actor": "researcher",
+        "tx": "0x94916f88dcee45b21943a58c8948b346a52cc9b59ee52c94c3f5c09c08156b08",
+        "leader": "SUCCESS",
+        "result_name": "MAJORITY_AGREE",
+        "votes": [
+          "IDLE",
+          "AGREE",
+          "AGREE",
+          "IDLE",
+          "AGREE"
+        ],
+        "version": 1,
+        "evidence_hash": "e626ba02403947817f43bfa7279778ebc2a44f6ce78c48547437bc966fd20c38",
+        "deadline_met": true
+      },
+      "adjudicate": {
+        "fn": "adjudicate",
+        "actor": "stranger",
+        "tx": "0x28a25041cd20b41854ebc73386719d20342c5e8e66f83f5e01cc0755cc0ce423",
+        "leader": "SUCCESS",
+        "result_name": "MAJORITY_AGREE",
+        "votes": [
+          "AGREE",
+          "AGREE",
+          "AGREE",
+          "DISAGREE",
+          "DISAGREE"
+        ],
+        "verdict": {
+          "agreement_id": "DM-LIVE-B-09061830",
+          "consumable": true,
+          "deadline": "2026-09-06T18:42:35Z",
+          "deadline_met": true,
+          "escrow_atto": "20000000000000000",
+          "evidence_hash": "e626ba02403947817f43bfa7279778ebc2a44f6ce78c48547437bc966fd20c38",
+          "evidence_sufficient": false,
+          "evidence_version": 1,
+          "finalized": true,
+          "found": true,
+          "qualified": false,
+          "qualified_version": 0,
+          "reclaimed_atto": "0",
+          "record_digest": "1ff98cc7c241c3ff5b06685c7880b47606b4f9eaab403ac05be1db5c9067917e",
+          "released": false,
+          "released_atto": "0",
+          "requirements_met": 4,
+          "requirements_total": 6,
+          "researcher": "0x57a7dc8ea2d2de0a5906eb28902b8d677dfc657c",
+          "resubmittable": true,
+          "reward_atto": "20000000000000000",
+          "schema_version": 1,
+          "sponsor": "0x86ddeafc53b2e194aad4d74d265ab7cb741118b5",
+          "status": "ADJUDICATED",
+          "terms_hash": "5947515288de51d60abb4b7745d899f13c4a2c88eb86289688ab4980a1d0be29",
+          "terms_version": 1,
+          "verdict": "NOT_QUALIFIED"
+        },
+        "receipt": {
+          "agreement_id": "DM-LIVE-B-09061830",
+          "contradiction_suspected": true,
+          "deadline_met": true,
+          "decided_at": "2026-09-06T18:37:55Z",
+          "evidence_hash": "e626ba02403947817f43bfa7279778ebc2a44f6ce78c48547437bc966fd20c38",
+          "evidence_sufficient": false,
+          "examined_source_count": 4,
+          "excluded_source_count": 0,
+          "found": true,
+          "injection_suspected": false,
+          "reason_codes": [
+            "REQUIREMENT_NOT_SATISFIED",
+            "REQUIREMENT_UNVERIFIABLE",
+            "EVIDENCE_CONTRADICTORY"
+          ],
+          "record_digest": "1ff98cc7c241c3ff5b06685c7880b47606b4f9eaab403ac05be1db5c9067917e",
+          "requirements": [
+            {
+              "finding": "NOT_SATISFIED",
+              "kind": "ROW_COUNT_MIN",
+              "note": "",
+              "requirement_id": "M1"
+            },
+            {
+              "finding": "SATISFIED",
+              "kind": "COLUMNS_REQUIRED",
+              "note": "",
+              "requirement_id": "M2"
+            },
+            {
+              "finding": "SATISFIED",
+              "kind": "SEMANTIC",
+              "note": "Methodology document describes assay protocol (two formats, 8-point series, 4PL fit), validation procedure (Hill slope, plateaus, replicate agreement), and replicate policy (up to 3 biological replicates, not averaged).",
+              "requirement_id": "M3"
+            },
+            {
+              "finding": "UNVERIFIABLE",
+              "kind": "SEMANTIC",
+              "note": "Analysis and methodology claim 10,240 observations, but dataset_facts show row_count=9,000. The stated observation count is inconsistent with authoritative dataset facts, so M4 is not satisfied.",
+              "requirement_id": "M4"
+            },
+            {
+              "finding": "SATISFIED",
+              "kind": "ACCESSIBLE",
+              "note": "",
+              "requirement_id": "M5"
+            },
+            {
+              "finding": "SATISFIED",
+              "kind": "DEADLINE",
+              "note": "",
+              "requirement_id": "M6"
+            }
+          ],
+          "requirements_met": 4,
+          "requirements_total": 6,
+          "schema_version": 1,
+          "sources": [
+            {
+              "byte_count": 482855,
+              "column_count": 7,
+              "hash_match": "MATCH",
+              "kind": "DATASET",
+              "row_count": 9000,
+              "source_id": "dataset",
+              "status": "EXAMINED"
+            },
+            {
+              "byte_count": 1933,
+              "column_count": 0,
+              "hash_match": "MATCH",
+              "kind": "METHODOLOGY",
+              "row_count": 0,
+              "source_id": "methodology",
+              "status": "EXAMINED"
+            },
+            {
+              "byte_count": 1042,
+              "column_count": 0,
+              "hash_match": "MATCH",
+              "kind": "ANALYSIS",
+              "row_count": 0,
+              "source_id": "analysis",
+              "status": "EXAMINED"
+            },
+            {
+              "byte_count": 1193,
+              "column_count": 0,
+              "hash_match": "MATCH",
+              "kind": "PUBLICATION",
+              "row_count": 0,
+              "source_id": "preprint",
+              "status": "EXAMINED"
+            }
+          ],
+          "summary": "NOT_QUALIFIED on evidence package 1: 4/4 sources examined; requirements satisfied 4/6; deadline met: yes; not satisfied: M1; unverifiable: M4",
+          "verdict": "NOT_QUALIFIED",
+          "version": 1
+        }
+      },
+      "walls": [
+        {
+          "wall": "release after NOT_QUALIFIED",
+          "fn": "release_reward",
+          "actor": "stranger",
+          "refused_at": "simulation",
+          "contract_text": "[EXPECTED] reward is releasable only after QUALIFIED"
+        },
+        {
+          "wall": "reclaim before the deadline",
+          "fn": "sponsor_reclaim",
+          "actor": "sponsor",
+          "refused_at": "simulation",
+          "contract_text": "[EXPECTED] the deadline has not passed"
+        },
+        {
+          "wall": "resubmit after reclaim",
+          "fn": "submit_evidence",
+          "actor": "researcher",
+          "refused_at": "simulation",
+          "contract_text": "[EXPECTED] agreement does not accept evidence in status RECLAIMED"
+        },
+        {
+          "wall": "researcher pulls the sponsor's refund",
+          "fn": "claim",
+          "actor": "researcher",
+          "refused_at": "simulation",
+          "contract_text": "[EXPECTED] nothing claimable"
+        }
+      ],
+      "reclaim": {
+        "fn": "sponsor_reclaim",
+        "actor": "sponsor",
+        "tx": "0xe161fa56817ac837d2e0df3c6e4fad141c5472954b6966ca545083689e2454f1",
+        "leader": "SUCCESS",
+        "result_name": "MAJORITY_AGREE",
+        "votes": [
+          "AGREE",
+          "AGREE",
+          "IDLE",
+          "IDLE",
+          "AGREE"
+        ],
+        "preflight": "Missing or invalid parameters.\nDouble check you have provided the correct parameters.\n\nDetails: execution failed\nVersion: viem@2.56.3"
+      },
+      "pull": {
+        "fn": "claim",
+        "actor": "sponsor",
+        "tx": "0xeae6fa78ce11003d4bd7e3644b69302890ff5429f5e1d382c08eb8b9ef7a19ae",
+        "leader": "SUCCESS",
+        "result_name": "MAJORITY_AGREE",
+        "votes": [
+          "IDLE",
+          "AGREE",
+          "IDLE",
+          "AGREE",
+          "AGREE"
+        ],
+        "balance": {
+          "before": "19939172757499941352",
+          "after": "19959046452499940529",
+          "delta": "19873694999999177",
+          "claimable_before": "20000000000000000",
+          "claimable_after": "0"
+        }
+      },
+      "final": {
+        "agreement_id": "DM-LIVE-B-09061830",
+        "created_at": "2026-09-06T18:35:39Z",
+        "deadline": "2026-09-06T18:42:35Z",
+        "decided_at": "2026-09-06T18:37:55Z",
+        "escrow_atto": "0",
+        "found": true,
+        "funded_at": "2026-09-06T18:36:28Z",
+        "judged_version": 1,
+        "objective": "Produce and publicly release a dataset of at least 10,000 validated IC50 observations for small molecules against eight kinase targets, together with the methodology and the analysis required by the research agreement.",
+        "package_count": 1,
+        "qualified": false,
+        "qualified_version": 0,
+        "reclaimed_atto": "20000000000000000",
+        "released": false,
+        "released_atto": "0",
+        "requirement_count": 6,
+        "researcher": "0x57a7dc8ea2d2de0a5906eb28902b8d677dfc657c",
+        "resubmittable": false,
+        "reward_atto": "20000000000000000",
+        "schema_version": 1,
+        "settled_at": "2026-09-06T18:45:28Z",
+        "source_count": 4,
+        "sponsor": "0x86ddeafc53b2e194aad4d74d265ab7cb741118b5",
+        "status": "RECLAIMED",
+        "terms_hash": "5947515288de51d60abb4b7745d899f13c4a2c88eb86289688ab4980a1d0be29",
+        "terms_version": 1,
+        "title": "Open Drug-Discovery Dataset",
+        "verdict": "NOT_QUALIFIED"
+      }
+    },
+    "C": {
+      "agreement_id": "DM-LIVE-C-09061830",
+      "create": {
+        "fn": "create_agreement",
+        "actor": "sponsor",
+        "tx": "0x2fe2c1b4624ece4e6876a1e1b21cc9dfea8256967e7dcae12c9b11ba86f1a679",
+        "leader": "SUCCESS",
+        "result_name": "MAJORITY_AGREE",
+        "votes": [
+          "AGREE",
+          "IDLE",
+          "IDLE",
+          "AGREE",
+          "AGREE"
+        ]
+      },
+      "terms_hash": "4fffbe98454503d82b00cb19144f6e46d95bae9ecb0e72d26120f312f6bf9e05",
+      "deadline": "2027-06-30T23:59:59Z",
+      "fund": {
+        "fn": "fund_agreement",
+        "actor": "sponsor",
+        "tx": "0x4b7b062c8433ca97e19b8d45767b713e84eab578e74b65d8b955e69cbbb58a36",
+        "leader": "SUCCESS",
+        "result_name": "MAJORITY_AGREE",
+        "votes": [
+          "AGREE",
+          "IDLE",
+          "AGREE",
+          "IDLE",
+          "AGREE"
+        ],
+        "value_atto": "20000000000000000"
+      },
+      "wrong_hash": "9513c475ae557172ad33909be108cd251b8595ebfb9818016c61bdd1729a6ea8",
+      "submit_v1": {
+        "fn": "submit_evidence",
+        "actor": "researcher",
+        "tx": "0x3db0b3009ace1f7c5dd581cf9b9f5c32db4f9ea88f2bcd536dfb5e8a60246577",
+        "leader": "SUCCESS",
+        "result_name": "MAJORITY_AGREE",
+        "votes": [
+          "IDLE",
+          "IDLE",
+          "AGREE",
+          "AGREE",
+          "AGREE"
+        ],
+        "version": 1,
+        "evidence_hash": "d6eda77639e826cd40a43503b4dc4d4074b6952ed8383bebfcefd99f08063c14",
+        "deadline_met": true
+      },
+      "adjudicate_v1": {
+        "fn": "adjudicate",
+        "actor": "stranger",
+        "tx": "0xa9cf238c72b2e9bb5271af5059bcdeeb6f640ce4c8cda2bf8a406abe8e1dce9d",
+        "leader": "SUCCESS",
+        "result_name": "MAJORITY_AGREE",
+        "votes": [
+          "AGREE",
+          "AGREE",
+          "IDLE",
+          "IDLE",
+          "AGREE"
+        ],
+        "verdict": {
+          "agreement_id": "DM-LIVE-C-09061830",
+          "consumable": true,
+          "deadline": "2027-06-30T23:59:59Z",
+          "deadline_met": true,
+          "escrow_atto": "20000000000000000",
+          "evidence_hash": "d6eda77639e826cd40a43503b4dc4d4074b6952ed8383bebfcefd99f08063c14",
+          "evidence_sufficient": false,
+          "evidence_version": 1,
+          "finalized": true,
+          "found": true,
+          "qualified": false,
+          "qualified_version": 0,
+          "reclaimed_atto": "0",
+          "record_digest": "d042f8ec67613f6d8204e49cd1ed58d1ee1d1270d56a4a785aa6e2b9f3ff8367",
+          "released": false,
+          "released_atto": "0",
+          "requirements_met": 5,
+          "requirements_total": 6,
+          "researcher": "0x57a7dc8ea2d2de0a5906eb28902b8d677dfc657c",
+          "resubmittable": true,
+          "reward_atto": "20000000000000000",
+          "schema_version": 1,
+          "sponsor": "0x86ddeafc53b2e194aad4d74d265ab7cb741118b5",
+          "status": "ADJUDICATED",
+          "terms_hash": "4fffbe98454503d82b00cb19144f6e46d95bae9ecb0e72d26120f312f6bf9e05",
+          "terms_version": 1,
+          "verdict": "NOT_QUALIFIED"
+        },
+        "receipt": {
+          "agreement_id": "DM-LIVE-C-09061830",
+          "contradiction_suspected": false,
+          "deadline_met": true,
+          "decided_at": "2026-09-06T18:49:32Z",
+          "evidence_hash": "d6eda77639e826cd40a43503b4dc4d4074b6952ed8383bebfcefd99f08063c14",
+          "evidence_sufficient": false,
+          "examined_source_count": 3,
+          "excluded_source_count": 1,
+          "found": true,
+          "injection_suspected": false,
+          "reason_codes": [
+            "REQUIREMENT_NOT_SATISFIED",
+            "EVIDENCE_HASH_MISMATCH"
+          ],
+          "record_digest": "d042f8ec67613f6d8204e49cd1ed58d1ee1d1270d56a4a785aa6e2b9f3ff8367",
+          "requirements": [
+            {
+              "finding": "SATISFIED",
+              "kind": "ROW_COUNT_MIN",
+              "note": "",
+              "requirement_id": "M1"
+            },
+            {
+              "finding": "SATISFIED",
+              "kind": "COLUMNS_REQUIRED",
+              "note": "",
+              "requirement_id": "M2"
+            },
+            {
+              "finding": "NOT_SATISFIED",
+              "kind": "SEMANTIC",
+              "note": "The committed evidence does not contain the methodology document itself; the preprint merely references it as an external document. Detailed assay protocols and replicate policies are therefore missing from the evidence package.",
+              "requirement_id": "M3"
+            },
+            {
+              "finding": "SATISFIED",
+              "kind": "SEMANTIC",
+              "note": "The analysis reports 10,240 observations and 8 targets, which is consistent with the dataset_facts (10,240 rows) and the target counts listed in the analysis document.",
+              "requirement_id": "M4"
+            },
+            {
+              "finding": "SATISFIED",
+              "kind": "ACCESSIBLE",
+              "note": "",
+              "requirement_id": "M5"
+            },
+            {
+              "finding": "SATISFIED",
+              "kind": "DEADLINE",
+              "note": "",
+              "requirement_id": "M6"
+            }
+          ],
+          "requirements_met": 5,
+          "requirements_total": 6,
+          "schema_version": 1,
+          "sources": [
+            {
+              "byte_count": 549471,
+              "column_count": 7,
+              "hash_match": "MATCH",
+              "kind": "DATASET",
+              "row_count": 10240,
+              "source_id": "dataset",
+              "status": "EXAMINED"
+            },
+            {
+              "byte_count": 0,
+              "column_count": 0,
+              "hash_match": "MISMATCH",
+              "kind": "METHODOLOGY",
+              "row_count": 0,
+              "source_id": "methodology",
+              "status": "HASH_MISMATCH"
+            },
+            {
+              "byte_count": 1042,
+              "column_count": 0,
+              "hash_match": "MATCH",
+              "kind": "ANALYSIS",
+              "row_count": 0,
+              "source_id": "analysis",
+              "status": "EXAMINED"
+            },
+            {
+              "byte_count": 1193,
+              "column_count": 0,
+              "hash_match": "MATCH",
+              "kind": "PUBLICATION",
+              "row_count": 0,
+              "source_id": "preprint",
+              "status": "EXAMINED"
+            }
+          ],
+          "summary": "NOT_QUALIFIED on evidence package 1: 3/4 sources examined; requirements satisfied 5/6; deadline met: yes; not satisfied: M3; unverifiable: none",
+          "verdict": "NOT_QUALIFIED",
+          "version": 1
+        }
+      }
+    }
+  }
+}

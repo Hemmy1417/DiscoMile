@@ -92,7 +92,7 @@ def main() -> None:
                 "scripts/live_scenarios.mjs", "scripts/sn.mjs"):
         check(f"no CR bytes: {rel}", b"\r" not in (ROOT / rel).read_bytes())
     for path in sorted((ROOT / "fixtures").rglob("*")):
-        if path.is_file():
+        if path.is_file() and "__pycache__" not in path.parts:
             rel = path.relative_to(ROOT).as_posix()
             check(f"fixture is LF-only: {rel}", b"\r" not in path.read_bytes())
 
@@ -186,6 +186,7 @@ def main() -> None:
     # -- fixtures reproduce byte for byte from the generator ----------------------------
     generated = {}
     import importlib.util
+    sys.dont_write_bytecode = True      # never leave a bytecode cache under fixtures/
     spec = importlib.util.spec_from_file_location("fixtures_generate", ROOT / "fixtures" / "generate.py")
     gen = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(gen)

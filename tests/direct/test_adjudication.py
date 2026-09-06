@@ -506,3 +506,18 @@ def test_an_agreement_without_a_dataset_source(module, c):
     assert verdict(c)["verdict"] == "QUALIFIED"
     assert blob_of(prompts()[0])["dataset_facts"] == []
     assert verdict(c)["requirements_met"] == 3
+
+
+def test_unbound_semantic_requirement_with_no_document_is_unverifiable_without_a_prompt(module, c):
+    from tests.direct.support import REQUIREMENTS
+    reqs = [r for r in REQUIREMENTS if r[1] != "SEMANTIC"] + [
+        ("M7", "SEMANTIC", "The documents agree with each other.", "", "")]
+    submitted(module, c, reqs=reqs)
+    page(RAW + "dataset/observations.csv", DATASET)     # no document is served
+    as_(module, STRANGER, 0)
+    c.adjudicate(AGREEMENT)                             # no panel_says: no prompt may fire
+    assert prompts() == []
+    rec = receipt(c)
+    assert row_of(rec, "M7")["finding"] == "UNVERIFIABLE"
+    assert row_of(rec, "M7")["note"] == "no committed document could be examined"
+    assert verdict(c)["verdict"] == "INCONCLUSIVE"

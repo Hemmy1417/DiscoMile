@@ -1,0 +1,270 @@
+verifying fixture URLs serve the committed bytes...
+  fixture verified: fixtures/project/dataset/observations.csv sha256 ca9a28617784ddff... (549471 bytes)
+  fixture verified: fixtures/project/methodology.md sha256 fc27a9bab9c7265a... (1933 bytes)
+  fixture verified: fixtures/project/analysis.md sha256 29bbaf3cce8b1caa... (1042 bytes)
+  fixture verified: fixtures/project/preprint.md sha256 f8e41c4c85df2ce4... (1193 bytes)
+  fixture verified: fixtures/variants/observations_short.csv sha256 87514c2f67e593ed... (482855 bytes)
+  fixture verified: fixtures/variants/observations_missing_column.csv sha256 437f862765e51a32... (498261 bytes)
+  fixture verified: fixtures/variants/analysis_contradictory.md sha256 03905075876fd771... (1043 bytes)
+  fixture verified: fixtures/variants/methodology_injection.md sha256 05e3b8bf05a03029... (2182 bytes)
+contract 0x9c99d7aD196F0d05Aa6eF4D56d78d43b54Ae19AB version 0.1.0; total_agreements 0
+  sponsor 0x86dDeAFc53B2e194aaD4d74D265ab7Cb741118b5 balance 19.938809 GEN
+  researcher 0x57a7Dc8Ea2d2De0a5906eB28902b8D677Dfc657C balance 19.82111 GEN
+  stranger 0xB66D7Fa5C37B696a78cB7F9B4F8056EF37a4b7e6 balance 19.995545 GEN
+
+SCENARIO A - qualified delivery: release to the researcher, pull
+  sponsor create_agreement tx 0x767c4810f8443a8de3279d66379c1af9fe4ae4b327087b0a186c406248fb9391 ...
+    leader SUCCESS; MAJORITY_AGREE; votes AGREE, IDLE, IDLE, AGREE, AGREE
+  DM-LIVE-A-09061902 DRAFT; terms_hash e0d58d205f2f1aca...; deadline 2027-06-30T23:59:59Z
+  WALL stranger funds: stranger fund_agreement must be refused
+    refused pre-flight by the fee simulation: [EXPECTED] only the sponsor funds
+  WALL inexact deposit: sponsor fund_agreement must be refused
+    refused pre-flight by the fee simulation: [EXPECTED] deposit must equal the reward exactly
+  sponsor fund_agreement tx 0x6055234f9b15f0cc1e11b2f41487485a98ba4b04ee70fcc232aa2a99b639e1e9 ...
+    leader SUCCESS; MAJORITY_AGREE; votes AGREE, IDLE, IDLE, AGREE, AGREE
+  FUNDED; escrow 20000000000000000 atto
+  WALL fund twice: sponsor fund_agreement must be refused
+    refused pre-flight by the fee simulation: [EXPECTED] agreement is not a draft
+  WALL stranger submits: stranger submit_evidence must be refused
+    refused pre-flight by the fee simulation: [EXPECTED] only the researcher submits
+  WALL reclaim before the deadline: sponsor sponsor_reclaim must be refused
+    refused pre-flight by the fee simulation: [EXPECTED] the deadline has not passed
+  WALL release before any verdict: stranger release_reward must be refused
+    refused pre-flight by the fee simulation: [EXPECTED] reward is releasable only after QUALIFIED
+  researcher submit_evidence tx 0x997bd93678ed937d9f8bdfb68c64b4dcf79fa5145c1e0032ab2f15c027240ac0 ...
+    leader SUCCESS; MAJORITY_AGREE; votes AGREE, IDLE, AGREE, IDLE, AGREE
+  package v1 PENDING; deadline_met true; evidence_hash 4dd257668dcffce4...
+  WALL reclaim while under review: sponsor sponsor_reclaim must be refused
+    refused pre-flight by the fee simulation: [EXPECTED] an evidence package is under review; adjudicate it first
+  stranger adjudicate tx 0x6f424313f4e02989b478c2ee3323d432a67b783a32103e18e6535f696691da44 ...
+    leader SUCCESS; MAJORITY_AGREE; votes IDLE, AGREE, AGREE, IDLE, AGREE
+  verdict QUALIFIED (status ADJUDICATED); 6/6 met; findings M1=SATISFIED M2=SATISFIED M3=SATISFIED M4=SATISFIED M5=SATISFIED M6=SATISFIED
+  sources dataset:EXAMINED(10240 rows, 7 cols) methodology:EXAMINED analysis:EXAMINED preprint:EXAMINED; reason_codes ["ALL_REQUIREMENTS_SATISFIED"]
+  summary: QUALIFIED on evidence package 1: 4/4 sources examined; requirements satisfied 6/6; deadline met: yes; not satisfied: none; unverifiable: none
+  WALL second adjudication: stranger adjudicate must be refused
+    refused pre-flight by the fee simulation: [EXPECTED] no evidence package is under review
+  WALL reclaim after qualified: sponsor sponsor_reclaim must be refused
+    refused pre-flight by the fee simulation: [EXPECTED] agreement qualified; the reward belongs to the researcher
+  WALL resubmit after qualified: researcher submit_evidence must be refused
+    refused pre-flight by the fee simulation: [EXPECTED] agreement already qualified
+  stranger release_reward tx 0xbb3faf6a2f4e5a58d4f8fa1f5f3128ccb6d1502cde948af2144e64d7979b914f ...
+    leader SUCCESS; MAJORITY_AGREE; votes AGREE, AGREE, AGREE, IDLE, IDLE
+  RELEASED: reward credited to the researcher's claimable balance (cranked by the stranger)
+  WALL double release: stranger release_reward must be refused
+    refused pre-flight by the fee simulation: [EXPECTED] reward is releasable only after QUALIFIED
+  WALL stranger pulls an empty ledger: stranger claim must be refused
+    refused pre-flight by the fee simulation: [EXPECTED] nothing claimable
+  researcher claim tx 0xe0fbb4853dd2f5e9afff687406cd9e86df27c3a43d5080e242aa6f53f0db9c3d ...
+    leader SUCCESS; MAJORITY_AGREE; votes AGREE, IDLE, AGREE, IDLE, AGREE
+  researcher claim: +0.019873 GEN (credit 0.02 minus this transaction's net fee); claimable now 0
+  WALL double pull: researcher claim must be refused
+    refused pre-flight by the fee simulation: [EXPECTED] nothing claimable
+
+SCENARIO B - not qualified by code (9,000 of 10,000 records), reclaim after the deadline
+  sponsor create_agreement tx 0xd49f15e2c507f891695b09e92433d752286df961c655be22ae24a1a2017bd6b9 ...
+    leader SUCCESS; MAJORITY_AGREE; votes IDLE, IDLE, AGREE, AGREE, AGREE
+  DM-LIVE-B-09061902 DRAFT; terms_hash f3adbcb3aa4fcb31...; deadline 2026-09-06T19:14:52Z
+  sponsor fund_agreement tx 0x63789e130358d8da83e82e172e64a15a0c6f4f1d52fcbc956b2f7ad4063e7c4f ...
+    leader SUCCESS; MAJORITY_AGREE; votes IDLE, IDLE, AGREE, AGREE, AGREE
+  FUNDED; escrow 20000000000000000 atto
+  researcher submit_evidence tx 0xe7f191424240bd5f71272157db0a75bd34e2a671c8ab3a788591a852642b345a ...
+    leader SUCCESS; MAJORITY_AGREE; votes IDLE, IDLE, AGREE, AGREE, AGREE
+  package v1 PENDING; deadline_met true; evidence_hash 58fc69238ce03e1d...
+  stranger adjudicate tx 0x757e3fcaae5fd5317ab27a4ac8986954f9c8153f1ba1215ecfbf30b9a71778ed ...
+    leader SUCCESS; MAJORITY_AGREE; votes AGREE, DISAGREE, AGREE, IDLE, AGREE
+  verdict NOT_QUALIFIED (status ADJUDICATED); 3/6 met; findings M1=NOT_SATISFIED M2=SATISFIED M3=UNVERIFIABLE M4=UNVERIFIABLE M5=SATISFIED M6=SATISFIED
+  sources dataset:EXAMINED(9000 rows, 7 cols) methodology:EXAMINED analysis:EXAMINED preprint:EXAMINED; reason_codes ["REQUIREMENT_NOT_SATISFIED","REQUIREMENT_UNVERIFIABLE","EVIDENCE_CONTRADICTORY"]
+  summary: NOT_QUALIFIED on evidence package 1: 4/4 sources examined; requirements satisfied 3/6; deadline met: yes; not satisfied: M1; unverifiable: M3, M4
+  WALL release after NOT_QUALIFIED: stranger release_reward must be refused
+    refused pre-flight by the fee simulation: [EXPECTED] reward is releasable only after QUALIFIED
+  WALL reclaim before the deadline: sponsor sponsor_reclaim must be refused
+    refused pre-flight by the fee simulation: [EXPECTED] the deadline has not passed
+  waiting for the deadline 2026-09-06T19:14:52Z to pass (B)
+  waiting for the deadline 2026-09-06T19:14:52Z to pass (B)
+  waiting for the deadline 2026-09-06T19:14:52Z to pass (B)
+  waiting for the deadline 2026-09-06T19:14:52Z to pass (B)
+  waiting for the deadline 2026-09-06T19:14:52Z to pass (B)
+  waiting for the deadline 2026-09-06T19:14:52Z to pass (B)
+  waiting for the deadline 2026-09-06T19:14:52Z to pass (B)
+  waiting for the deadline 2026-09-06T19:14:52Z to pass (B)
+  waiting for the deadline 2026-09-06T19:14:52Z to pass (B)
+  waiting for the deadline 2026-09-06T19:14:52Z to pass (B)
+  waiting for the deadline 2026-09-06T19:14:52Z to pass (B)
+  waiting for the deadline 2026-09-06T19:14:52Z to pass (B)
+  waiting for the deadline 2026-09-06T19:14:52Z to pass (B)
+  waiting for the deadline 2026-09-06T19:14:52Z to pass (B)
+  waiting for the deadline 2026-09-06T19:14:52Z to pass (B)
+  waiting for the deadline 2026-09-06T19:14:52Z to pass (B)
+  waiting for the deadline 2026-09-06T19:14:52Z to pass (B)
+  waiting for the deadline 2026-09-06T19:14:52Z to pass (B)
+  waiting for the deadline 2026-09-06T19:14:52Z to pass (B)
+  sponsor sponsor_reclaim tx 0x030749e616a11a9043ad532124a18f9e93658257a9db50a56758d362ec6a90bd ...
+    leader SUCCESS; MAJORITY_AGREE; votes AGREE, IDLE, AGREE, AGREE, IDLE (fee simulation refused; sent with a plain estimate)
+  RECLAIMED: escrow credited to the sponsor's claimable balance
+  WALL resubmit after reclaim: researcher submit_evidence must be refused
+    refused pre-flight by the fee simulation: [EXPECTED] agreement does not accept evidence in status RECLAIMED
+  WALL researcher pulls the sponsor's refund: researcher claim must be refused
+    refused pre-flight by the fee simulation: [EXPECTED] nothing claimable
+  sponsor claim tx 0x1896bb6f63248d409cf17d8cc46d0075b357a69c5b00813ce78bc67feb28b74a ...
+    leader SUCCESS; MAJORITY_AGREE; votes AGREE, IDLE, IDLE, AGREE, AGREE
+  sponsor claim: +0.019873 GEN (credit 0.02 minus this transaction's net fee); claimable now 0
+
+SCENARIO C - inconclusive (methodology committed under a hash its bytes do not match), recovery, release
+  sponsor create_agreement tx 0x3730a8232a1a4e33a94d3e5a58da189c0ccc3d686c8efefa473b711f07683ff0 ...
+    leader SUCCESS; MAJORITY_AGREE; votes AGREE, AGREE, IDLE, IDLE, AGREE
+  DM-LIVE-C-09061902 DRAFT; terms_hash 928c2a1ffc09bed7...; deadline 2027-06-30T23:59:59Z
+  sponsor fund_agreement tx 0x7bc18262496ee4364c371423d2ff26bf5f5a7bd3b9aa750ce6c5999b7a08c727 ...
+    leader SUCCESS; MAJORITY_AGREE; votes AGREE, IDLE, AGREE, IDLE, AGREE
+  FUNDED; escrow 20000000000000000 atto
+  researcher submit_evidence tx 0xe296897f5dba4f38bda1e40a8533a1c4bb3fad651b717d06b842edc79150be8f ...
+    leader SUCCESS; MAJORITY_AGREE; votes IDLE, AGREE, AGREE, IDLE, AGREE
+  package v1 PENDING; deadline_met true; evidence_hash 400cd0bcc6d3cc5a...
+  stranger adjudicate tx 0xb10bcdc437d3384561de2d016785037cf5e654158d933a11ae0d533a1c085fa6 ...
+   adjudicate: UNDETERMINED - retrying
+  stranger adjudicate tx 0xe8ba92beb1d6633523478ae307c989e51f1288fa77323ff6148580b386f4dadf ...
+   adjudicate: UNDETERMINED - retrying
+  stranger adjudicate tx 0xb5863c4d72b2a7037717fb68048605a7d75d8d35c5c37e229516f3da0e2776b2 ...
+    leader SUCCESS; MAJORITY_AGREE; votes DISAGREE, AGREE, AGREE, IDLE, AGREE
+  verdict INCONCLUSIVE (status ADJUDICATED); 5/6 met; findings M1=SATISFIED M2=SATISFIED M3=UNVERIFIABLE M4=SATISFIED M5=SATISFIED M6=SATISFIED
+  sources dataset:EXAMINED(10240 rows, 7 cols) methodology:HASH_MISMATCH analysis:EXAMINED preprint:EXAMINED; reason_codes ["REQUIREMENT_UNVERIFIABLE","EVIDENCE_HASH_MISMATCH"]
+  summary: INCONCLUSIVE on evidence package 1: 3/4 sources examined; requirements satisfied 5/6; deadline met: yes; not satisfied: none; unverifiable: M3
+  WALL release after INCONCLUSIVE: stranger release_reward must be refused
+    refused pre-flight by the fee simulation: [EXPECTED] reward is releasable only after QUALIFIED
+  researcher submit_evidence tx 0xd2334ca858e4d97a584c58897b173baa9d8f69adb79d269dd3d5efb52bc4d919 ...
+    leader SUCCESS; MAJORITY_AGREE; votes IDLE, AGREE, IDLE, AGREE, AGREE
+  package v2 PENDING; deadline_met true; evidence_hash 58626eb659e3e795...
+  stranger adjudicate tx 0x100cba0c35cf43bdeb434f7fba5d591161fca66e4aa0b3b4995e2514fe21f7fb ...
+    leader SUCCESS; MAJORITY_AGREE; votes AGREE, AGREE, IDLE, IDLE, AGREE
+  verdict QUALIFIED (status ADJUDICATED); 6/6 met; findings M1=SATISFIED M2=SATISFIED M3=SATISFIED M4=SATISFIED M5=SATISFIED M6=SATISFIED
+  sources dataset:EXAMINED(10240 rows, 7 cols) methodology:EXAMINED analysis:EXAMINED preprint:EXAMINED; reason_codes ["ALL_REQUIREMENTS_SATISFIED"]
+  summary: QUALIFIED on evidence package 2: 4/4 sources examined; requirements satisfied 6/6; deadline met: yes; not satisfied: none; unverifiable: none
+  researcher release_reward tx 0xd1eb1d9c7b11f65bb4fdac046c28663a3d2a5e551e021d205cbe383651847bd4 ...
+    leader SUCCESS; MAJORITY_AGREE; votes IDLE, AGREE, AGREE, IDLE, AGREE
+  researcher claim tx 0xf63569d13eb6cf79dec3740a318fedf0e051aa77ea61545bb640603b6479163a ...
+    leader SUCCESS; MAJORITY_AGREE; votes IDLE, AGREE, IDLE, AGREE, AGREE
+  researcher claim: +0.019873 GEN (credit 0.02 minus this transaction's net fee); claimable now 0
+
+SCENARIO D - late delivery: complete evidence, missed deadline
+  sponsor create_agreement tx 0x2ff806dd7a4c76cf4652b80174a097a9d7dfbc93051e83dc59d2bc34bc150c08 ...
+    leader SUCCESS; MAJORITY_AGREE; votes AGREE, IDLE, AGREE, AGREE, IDLE
+  DM-LIVE-D-09061902 DRAFT; terms_hash 7c1a5b4a88ee8f33...; deadline 2026-09-06T19:30:14Z
+  sponsor fund_agreement tx 0x90034fc619a1ad0ff8afb597b227226fcdbd2cb1fcf017845f21f0e540501be1 ...
+    leader SUCCESS; MAJORITY_AGREE; votes IDLE, AGREE, IDLE, AGREE, AGREE
+  FUNDED; escrow 20000000000000000 atto
+  waiting for the deadline 2026-09-06T19:30:14Z to pass (D)
+  waiting for the deadline 2026-09-06T19:30:14Z to pass (D)
+  waiting for the deadline 2026-09-06T19:30:14Z to pass (D)
+  waiting for the deadline 2026-09-06T19:30:14Z to pass (D)
+  waiting for the deadline 2026-09-06T19:30:14Z to pass (D)
+  waiting for the deadline 2026-09-06T19:30:14Z to pass (D)
+  waiting for the deadline 2026-09-06T19:30:14Z to pass (D)
+  researcher submit_evidence tx 0xaf0dc8574bc57c6ab742e7de85bcf8af35f8998f6d3a9a576857d3d60890417a ...
+    leader SUCCESS; MAJORITY_AGREE; votes AGREE, AGREE, IDLE, AGREE, IDLE
+  package v1 PENDING; deadline_met false; evidence_hash f26855ca5b48ead9...
+  stranger adjudicate tx 0x31afc2bbeca7f7fe5f2bef201538bd6602851b773bd83d13b867d2519f6ea785 ...
+    leader SUCCESS; MAJORITY_AGREE; votes IDLE, IDLE, AGREE, AGREE, AGREE
+  verdict NOT_QUALIFIED (status ADJUDICATED); 5/6 met; findings M1=SATISFIED M2=SATISFIED M3=SATISFIED M4=SATISFIED M5=SATISFIED M6=NOT_SATISFIED
+  sources dataset:EXAMINED(10240 rows, 7 cols) methodology:EXAMINED analysis:EXAMINED preprint:EXAMINED; reason_codes ["DEADLINE_MISSED","REQUIREMENT_NOT_SATISFIED"]
+  summary: NOT_QUALIFIED on evidence package 1: 4/4 sources examined; requirements satisfied 5/6; deadline met: no; not satisfied: M6; unverifiable: none
+  sponsor sponsor_reclaim tx 0xd8844a8043cbf43b36288c82c45f195282eedae975914cdd4aea3c51dc08aaa0 ...
+    leader SUCCESS; MAJORITY_AGREE; votes AGREE, IDLE, AGREE, AGREE, IDLE (fee simulation refused; sent with a plain estimate)
+  RECLAIMED 20000000000000000 atto credited to the sponsor
+  sponsor claim tx 0x1906b7289673a5f8d23ffa8e37b215517731c5d0ed6b74dbd6067ac00636fe51 ...
+    leader SUCCESS; MAJORITY_AGREE; votes AGREE, AGREE, IDLE, IDLE, AGREE
+  sponsor claim: +0.019873 GEN (credit 0.02 minus this transaction's net fee); claimable now 0
+
+SCENARIO E - the refusal catalog as finalized ERROR receipts (deterministic walls)
+  WALL unknown agreement: stranger adjudicate must be refused
+    refused pre-flight by the fee simulation: [EXPECTED] unknown agreement_id
+  stranger wall:unknown agreement tx 0x6c8f440dec8402632c5669ae2cf9dc5f7f5574bd0398c2bbb8bf1a4113d901e8 ...
+    leader ERROR; MAJORITY_AGREE; votes AGREE, AGREE, AGREE, IDLE, IDLE (fee simulation refused; sent with a plain estimate)
+    finalized leader ERROR: [EXPECTED] unknown agreement_id
+  sponsor create_agreement tx 0x706e83ace99556a73a05cb5af4eb64c161bbc4c154c4e131ee617d34325fc4ba ...
+    leader SUCCESS; MAJORITY_AGREE; votes AGREE, IDLE, IDLE, AGREE, AGREE
+  DM-LIVE-E-09061902 DRAFT; terms_hash 7fec433c8c4dfceb...; deadline 2027-06-30T23:59:59Z
+  WALL stranger funds: stranger fund_agreement must be refused
+    refused pre-flight by the fee simulation: [EXPECTED] only the sponsor funds
+  stranger wall:stranger funds tx 0xf0c33e1181f26d8ff3cf0d0421c057b4bb9e5b6f1e9e8bf5612c0ffcb7d1e1aa ...
+    leader ERROR; MAJORITY_AGREE; votes AGREE, IDLE, AGREE, IDLE, AGREE (fee simulation refused; sent with a plain estimate)
+    finalized leader ERROR: [EXPECTED] only the sponsor funds
+  WALL inexact deposit: sponsor fund_agreement must be refused
+    refused pre-flight by the fee simulation: [EXPECTED] deposit must equal the reward exactly
+  sponsor wall:inexact deposit tx 0x8218d0ec9b0fa453617588fb9207885977eeda5cb57f7c7b0eae13ef8adbe355 ...
+    leader ERROR; MAJORITY_AGREE; votes AGREE, IDLE, IDLE, AGREE, AGREE (fee simulation refused; sent with a plain estimate)
+    finalized leader ERROR: [EXPECTED] deposit must equal the reward exactly
+  WALL submit before funding: researcher submit_evidence must be refused
+    refused pre-flight by the fee simulation: [EXPECTED] agreement does not accept evidence in status DRAFT
+  researcher wall:submit before funding tx 0x925c0b53b18dc4dc038f92df377a44f5ef00842f420e741735f08bb6446245a9 ...
+    leader ERROR; MAJORITY_AGREE; votes AGREE, AGREE, IDLE, AGREE, IDLE (fee simulation refused; sent with a plain estimate)
+    finalized leader ERROR: [EXPECTED] agreement does not accept evidence in status DRAFT
+  sponsor fund_agreement tx 0xb3234e2a9b9859ef478622048a7825460c8f21e3b6f3b1cf145bea152fc0e545 ...
+    leader SUCCESS; MAJORITY_AGREE; votes AGREE, IDLE, AGREE, AGREE, IDLE
+  FUNDED; escrow 20000000000000000 atto
+  WALL stranger submits: stranger submit_evidence must be refused
+    refused pre-flight by the fee simulation: [EXPECTED] only the researcher submits
+  stranger wall:stranger submits tx 0xe097b146d62971ff3b0c3b256099f7b27f8de6caafeb778cd891194f7edbcdf1 ...
+    leader ERROR; MAJORITY_AGREE; votes IDLE, AGREE, IDLE, AGREE, AGREE (fee simulation refused; sent with a plain estimate)
+    finalized leader ERROR: [EXPECTED] only the researcher submits
+  WALL reclaim before the deadline: sponsor sponsor_reclaim must be refused
+    refused pre-flight by the fee simulation: [EXPECTED] the deadline has not passed
+  sponsor wall:reclaim before the deadline tx 0x6dacc2953a2f3a735d16ad7d62153d22616acc15dab9128a0f8eb7eccb662cf3 ...
+    leader ERROR; MAJORITY_AGREE; votes AGREE, AGREE, IDLE, IDLE, AGREE (fee simulation refused; sent with a plain estimate)
+    finalized leader ERROR: [EXPECTED] the deadline has not passed
+  WALL release before any verdict: stranger release_reward must be refused
+    refused pre-flight by the fee simulation: [EXPECTED] reward is releasable only after QUALIFIED
+  stranger wall:release before any verdict tx 0x03403967d1e4910725fcbc451191977b5143d7831c9bf88b0711aee2290edcc9 ...
+    leader ERROR; MAJORITY_AGREE; votes AGREE, AGREE, IDLE, IDLE, AGREE (fee simulation refused; sent with a plain estimate)
+    finalized leader ERROR: [EXPECTED] reward is releasable only after QUALIFIED
+  WALL package missing a source: researcher submit_evidence must be refused
+    refused pre-flight by the fee simulation: [EXPECTED] an evidence package covers every declared source exactly once
+  researcher wall:package missing a source tx 0x7b5eb8a84109419d8925674ee8de98cda1062f5e5fc1d78d6fd83ed6eb4e4a73 ...
+    leader ERROR; MAJORITY_AGREE; votes AGREE, IDLE, AGREE, AGREE, IDLE (fee simulation refused; sent with a plain estimate)
+    finalized leader ERROR: [EXPECTED] an evidence package covers every declared source exactly once
+  WALL unpinned location: researcher submit_evidence must be refused
+    refused pre-flight by the fee simulation: [EXPECTED] url must be a commit-pinned raw.githubusercontent.com file or a zenodo.org record file
+  researcher wall:unpinned location tx 0x3013846f438e5b6194baaf24f7eb5cc512277e171eee2effc977cee616eccfa1 ...
+    leader ERROR; MAJORITY_AGREE; votes AGREE, AGREE, AGREE, IDLE, IDLE (fee simulation refused; sent with a plain estimate)
+    finalized leader ERROR: [EXPECTED] url must be a commit-pinned raw.githubusercontent.com file or a zenodo.org record file
+  WALL malformed content hash: researcher submit_evidence must be refused
+    refused pre-flight by the fee simulation: [EXPECTED] content_hash must be 64 lowercase hex characters
+  researcher wall:malformed content hash tx 0xba7fdd068d177b108db5420a1d04bd492715e105c2e3688c2e059bd0c593011b ...
+    leader ERROR; MAJORITY_AGREE; votes AGREE, AGREE, IDLE, IDLE, AGREE (fee simulation refused; sent with a plain estimate)
+    finalized leader ERROR: [EXPECTED] content_hash must be 64 lowercase hex characters
+  researcher submit_evidence tx 0x7d4855e0d8d810c1126544a58cb3339d5b215845586d0682a7c6a3bc48d2c7a5 ...
+    leader SUCCESS; MAJORITY_AGREE; votes AGREE, AGREE, IDLE, AGREE, IDLE
+  package v1 PENDING; deadline_met true; evidence_hash 85e575494fd55966...
+  WALL reclaim while under review: sponsor sponsor_reclaim must be refused
+    refused pre-flight by the fee simulation: [EXPECTED] an evidence package is under review; adjudicate it first
+  sponsor wall:reclaim while under review tx 0x45aeb721cb4e2c0863215ff645c35ed5595aaf264789c83193a8e3b7b9d6941a ...
+    leader ERROR; MAJORITY_AGREE; votes AGREE, IDLE, AGREE, AGREE, IDLE (fee simulation refused; sent with a plain estimate)
+    finalized leader ERROR: [EXPECTED] an evidence package is under review; adjudicate it first
+  WALL second package while under review: researcher submit_evidence must be refused
+    refused pre-flight by the fee simulation: [EXPECTED] agreement does not accept evidence in status UNDER_REVIEW
+  researcher wall:second package while under review tx 0x1483ce1805b236fc7a02d439bdd2a55bad8b09f39c3ff3ae283e6ac16827e1bb ...
+    leader ERROR; MAJORITY_AGREE; votes IDLE, IDLE, AGREE, AGREE, AGREE (fee simulation refused; sent with a plain estimate)
+    finalized leader ERROR: [EXPECTED] agreement does not accept evidence in status UNDER_REVIEW
+
+SCENARIO F - contradictory analysis and an injected methodology: the package must not qualify
+  sponsor create_agreement tx 0x5c956e5df1763e15fb22d037e17fff077b24ec8e5e66d10170b85ba191fec4b6 ...
+    leader SUCCESS; MAJORITY_AGREE; votes AGREE, AGREE, AGREE, IDLE, IDLE
+  DM-LIVE-F-09061902 DRAFT; terms_hash ad63cd0f102050e0...; deadline 2027-06-30T23:59:59Z
+  sponsor fund_agreement tx 0x01a76966936dba7b6f1ea4c2858f6dbca11f69287a870a95fb51e0e30d7aaed5 ...
+    leader SUCCESS; MAJORITY_AGREE; votes AGREE, AGREE, IDLE, AGREE, IDLE
+  FUNDED; escrow 20000000000000000 atto
+  researcher submit_evidence tx 0x40e520a8470c81df56035fe52ff9f9861c49397d838f794af574ceefdaf0c6c9 ...
+    leader SUCCESS; MAJORITY_AGREE; votes AGREE, IDLE, AGREE, IDLE, AGREE
+  package v1 PENDING; deadline_met true; evidence_hash 56a4cfc431e135b1...
+  stranger adjudicate tx 0x772a324aaebd0463ba4037c2badeeaadb1aa1121b8ef7267b213c4d1112cd1d0 ...
+    leader SUCCESS; MAJORITY_AGREE; votes AGREE, IDLE, IDLE, AGREE, AGREE
+  verdict INCONCLUSIVE (status ADJUDICATED); 4/6 met; findings M1=SATISFIED M2=SATISFIED M3=UNVERIFIABLE M4=UNVERIFIABLE M5=SATISFIED M6=SATISFIED
+  sources dataset:EXAMINED(10240 rows, 7 cols) methodology:EXAMINED analysis:EXAMINED preprint:EXAMINED; reason_codes ["REQUIREMENT_UNVERIFIABLE","EVIDENCE_CONTRADICTORY","INJECTION_SUSPECTED"]
+  summary: INCONCLUSIVE on evidence package 1: 4/4 sources examined; requirements satisfied 4/6; deadline met: yes; not satisfied: none; unverifiable: M3, M4
+  contradiction_suspected true; injection_suspected true
+  M3 UNVERIFIABLE: Methodology describes assay protocol, validation procedure, and replicate policy. Injection detected in document content.
+  M4 UNVERIFIABLE: Analysis states 25,000 observations covering 12 targets, but dataset facts show 10,240 rows and 8 target columns. Contradiction with dataset_facts.
+  WALL release after a non-qualifying verdict: stranger release_reward must be refused
+    refused pre-flight by the fee simulation: [EXPECTED] reward is releasable only after QUALIFIED
+
+transcript written to C:\Users\Pc\Desktop\DiscoMile\deploy\live_scenarios_transcript.json
+
+ALL LIVE SCENARIOS PASSED
