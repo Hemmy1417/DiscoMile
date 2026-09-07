@@ -21,8 +21,9 @@ Canonical Studio Next address:
 0x9c99d7aD196F0d05Aa6eF4D56d78d43b54Ae19AB
 
 Explorer:
-Studio Next has no public explorer; read any transaction with
-`node scripts/sn.mjs tx <hash>` and any state with the contract's views.
+https://explorer-studio-dev.genlayer.com/address/0x9c99d7aD196F0d05Aa6eF4D56d78d43b54Ae19AB
+(transactions open at https://explorer-studio-dev.genlayer.com/tx/<hash>;
+the toolkit reads the same receipts: `node scripts/sn.mjs tx <hash>`)
 
 Deployment transaction:
 0x7d2001fab501f9e53e0e010bba886c58b0854ea52a859e7ad10fdad1d8a02fbc

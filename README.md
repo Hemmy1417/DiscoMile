@@ -88,6 +88,7 @@ Everything else - creation, funding, commitment, credits, the pull payment, ever
 | Chain id | 61997 |
 | RPC | `https://studio-next.genlayer.com/api` |
 | Address | `0x9c99d7aD196F0d05Aa6eF4D56d78d43b54Ae19AB` |
+| Explorer | [contract](https://explorer-studio-dev.genlayer.com/address/0x9c99d7aD196F0d05Aa6eF4D56d78d43b54Ae19AB), [deployment transaction](https://explorer-studio-dev.genlayer.com/tx/0x7d2001fab501f9e53e0e010bba886c58b0854ea52a859e7ad10fdad1d8a02fbc); any hash in `docs/DEPLOYMENT.md` opens at `https://explorer-studio-dev.genlayer.com/tx/<hash>` |
 | Source | `contracts/discovery_milestone.py`, byte-verified against the deployment (`docs/DEPLOYMENT.md`) |
 | Runner | `py-genlayer:5jycge4q8k23462jtb0b9fyey1s9qz928sz2nbrd9mg4sxqg2qng` |
 

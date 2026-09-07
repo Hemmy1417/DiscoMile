@@ -2,15 +2,19 @@
 
 Only values that were verified are recorded here. The network is GenLayer
 Studio Next (`https://studio-next.genlayer.com/api`, chain id 61997, GenVM
-v0.6, 16 validators). Studio Next has no public block explorer; every
-transaction below is read back through `eth_getTransactionByHash` with the
-toolkit in `scripts/sn.mjs` (`node scripts/sn.mjs tx <hash>`), and every
-state claim through the contract's own views.
+v0.6, 16 validators). The network's explorer is
+https://explorer-studio-dev.genlayer.com - a transaction opens at `/tx/<hash>` and a
+contract at `/address/<address>`, so every hash below can be pasted there.
+Every transaction below was also read back through `eth_getTransactionByHash`
+with the toolkit in `scripts/sn.mjs` (`node scripts/sn.mjs tx <hash>`), and
+every state claim through the contract's own views.
 
 - Date: 2026-09-06
-- Contract: `0x9c99d7aD196F0d05Aa6eF4D56d78d43b54Ae19AB` (deployment of record)
+- Contract: `0x9c99d7aD196F0d05Aa6eF4D56d78d43b54Ae19AB` (deployment of record) -
+  [explorer](https://explorer-studio-dev.genlayer.com/address/0x9c99d7aD196F0d05Aa6eF4D56d78d43b54Ae19AB)
 - Deployment tx: `0x7d2001fab501f9e53e0e010bba886c58b0854ea52a859e7ad10fdad1d8a02fbc` - `FINALIZED`, `MAJORITY_AGREE`, leader
   execution `SUCCESS`, deploy-time votes `IDLE, AGREE, AGREE, IDLE, AGREE`
+  ([explorer](https://explorer-studio-dev.genlayer.com/tx/0x7d2001fab501f9e53e0e010bba886c58b0854ea52a859e7ad10fdad1d8a02fbc))
 - Deployment method: `node scripts/sn.mjs deploy contracts/discovery_milestone.py`
   (genlayer-js 2.0.0-rc.1 with the network's fee distribution; deployer
   `0x86dDeAFc53B2e194aaD4d74D265ab7Cb741118b5`, the sponsor wallet of the live
